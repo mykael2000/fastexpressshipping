@@ -1,8 +1,11 @@
 <?php
 namespace App\Providers;
 
+use App\Models\ShipmentRequest;
+use App\Policies\ShipmentRequestPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,5 +18,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('tracking', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip());
         });
+
+        Gate::policy(ShipmentRequest::class, ShipmentRequestPolicy::class);
     }
 }
