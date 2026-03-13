@@ -10,7 +10,7 @@
 <body class="min-h-full bg-gray-50 flex flex-col">
 
     <!-- Navigation -->
-    <header class="bg-fes-navy shadow-md">
+    <header class="bg-fes-navy shadow-md relative">
         <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-fes-orange rounded-full flex items-center justify-center">
@@ -20,13 +20,50 @@
                 </div>
                 <span class="text-white font-bold text-lg tracking-tight">Fast<span class="text-fes-orange">Express</span> Shipping</span>
             </a>
-            <div class="flex items-center gap-6 text-sm">
-                <a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition">Track Shipment</a>
+            <!-- Desktop nav -->
+            <div class="hidden md:flex items-center gap-5 text-sm" x-data="{ mobileOpen: false }">
+                <a href="{{ route('home') }}" class="text-gray-300 hover:text-white transition">Track</a>
+                <a href="{{ route('services') }}" class="text-gray-300 hover:text-white transition">Services</a>
+                <a href="{{ route('about') }}" class="text-gray-300 hover:text-white transition">About</a>
+                <a href="{{ route('contact') }}" class="text-gray-300 hover:text-white transition">Contact</a>
+                <a href="{{ route('faq') }}" class="text-gray-300 hover:text-white transition">FAQ</a>
+                <a href="{{ route('news.index') }}" class="text-gray-300 hover:text-white transition">News</a>
+                <a href="{{ route('service-alerts') }}" class="text-gray-300 hover:text-white transition">Alerts</a>
                 @auth
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-300 hover:text-white transition">Admin</a>
+                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'staff')
+                        <a href="{{ route('admin.dashboard') }}" class="bg-fes-orange text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition font-medium">Admin</a>
+                    @else
+                        <a href="{{ route('user.dashboard') }}" class="bg-fes-orange text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition font-medium">My Dashboard</a>
+                    @endif
                 @else
-                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white transition">Admin Login</a>
+                    <a href="{{ route('login') }}" class="text-gray-300 hover:text-white transition">Login</a>
+                    <a href="{{ route('register') }}" class="bg-fes-orange text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition font-medium">Register</a>
                 @endauth
+            </div>
+            <!-- Mobile menu button -->
+            <div class="md:hidden" x-data="{ open: false }">
+                <button @click="open = !open" class="text-gray-300 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <div x-show="open" @click.away="open = false" class="absolute top-16 left-0 right-0 bg-fes-navy-dark shadow-lg py-3 px-4 z-50 space-y-2 text-sm">
+                    <a href="{{ route('home') }}" class="block text-gray-300 hover:text-white py-1">Track Shipment</a>
+                    <a href="{{ route('services') }}" class="block text-gray-300 hover:text-white py-1">Services</a>
+                    <a href="{{ route('about') }}" class="block text-gray-300 hover:text-white py-1">About</a>
+                    <a href="{{ route('contact') }}" class="block text-gray-300 hover:text-white py-1">Contact</a>
+                    <a href="{{ route('faq') }}" class="block text-gray-300 hover:text-white py-1">FAQ</a>
+                    <a href="{{ route('news.index') }}" class="block text-gray-300 hover:text-white py-1">News</a>
+                    <a href="{{ route('service-alerts') }}" class="block text-gray-300 hover:text-white py-1">Service Alerts</a>
+                    @auth
+                        @if(auth()->user()->role === 'admin' || auth()->user()->role === 'staff')
+                            <a href="{{ route('admin.dashboard') }}" class="block text-fes-orange hover:text-white py-1">Admin Panel</a>
+                        @else
+                            <a href="{{ route('user.dashboard') }}" class="block text-fes-orange hover:text-white py-1">My Dashboard</a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="block text-gray-300 hover:text-white py-1">Login</a>
+                        <a href="{{ route('register') }}" class="block text-fes-orange hover:text-white py-1">Register</a>
+                    @endauth
+                </div>
             </div>
         </nav>
     </header>
