@@ -43,6 +43,7 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
+          localDir: "./"
           remoteDir: ${{ secrets.SFTP_REMOTE_DIR }}
           exclude: |
             **/.git*
