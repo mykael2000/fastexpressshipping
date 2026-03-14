@@ -113,13 +113,3 @@ jobs:
           cat > deploy_app_protect/.htaccess <<'EOF'
           Require all denied
           EOF
-
-      - name: Upload /app protection .htaccess
-        uses: wangyucode/sftp-upload-action@v2.0.2
-        with:
-          host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          localDir: "${{ github.workspace }}/deploy_app_protect"
-          remoteDir: "./app"

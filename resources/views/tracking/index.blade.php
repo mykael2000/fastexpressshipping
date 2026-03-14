@@ -87,7 +87,7 @@
                 <div class="space-y-6">
                     <div class="overflow-hidden rounded-3xl border border-white/10 bg-white shadow-2xl">
                         <img
-                            src="{{ asset('images/hero-shipment.jpg') }}"
+                            src="{{ asset('images/cargo2.jpg') }}"
                             alt="Shipment and cargo operations"
                             class="h-64 w-full object-cover sm:h-72"
                         >
@@ -165,7 +165,7 @@
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div class="overflow-hidden rounded-2xl border border-white/10 bg-white shadow-lg">
-                            <img src="{{ asset('images/container-yard.jpg') }}" alt="Container yard" class="h-40 w-full object-cover">
+                            <img src="{{ asset('images/cargo5.jpg') }}" alt="Container yard" class="h-40 w-full object-cover">
                             <div class="p-4">
                                 <h3 class="font-bold text-fes-navy">Container Movement</h3>
                                 <p class="mt-1 text-sm text-gray-500">Monitor container handling, transfer and terminal activity.</p>
@@ -173,7 +173,7 @@
                         </div>
 
                         <div class="overflow-hidden rounded-2xl border border-white/10 bg-white shadow-lg">
-                            <img src="{{ asset('images/cargo-loading.jpg') }}" alt="Cargo loading" class="h-40 w-full object-cover">
+                            <img src="{{ asset('images/cargo4.jpg') }}" alt="Cargo loading" class="h-40 w-full object-cover">
                             <div class="p-4">
                                 <h3 class="font-bold text-fes-navy">Cargo Dispatch</h3>
                                 <p class="mt-1 text-sm text-gray-500">Track the loading and dispatch stages of important shipments.</p>
@@ -199,7 +199,7 @@
 
             <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
                 <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                    <img src="{{ asset('images/gallery-shipment-1.jpg') }}" alt="Shipment image 1" class="h-56 w-full object-cover">
+                    <img src="{{ asset('images/cargo.jpg') }}" alt="Shipment image 1" class="h-56 w-full object-cover">
                     <div class="p-5">
                         <h3 class="text-lg font-bold text-fes-navy">Shipment Arrival</h3>
                         <p class="mt-2 text-sm text-gray-500">Use this area for incoming shipment photos at destination terminals.</p>
@@ -207,7 +207,7 @@
                 </div>
 
                 <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                    <img src="{{ asset('images/gallery-shipment-2.jpg') }}" alt="Shipment image 2" class="h-56 w-full object-cover">
+                    <img src="{{ asset('images/cargo3.jpg') }}" alt="Shipment image 2" class="h-56 w-full object-cover">
                     <div class="p-5">
                         <h3 class="text-lg font-bold text-fes-navy">Container Inspection</h3>
                         <p class="mt-2 text-sm text-gray-500">Display inspection photos of containers before dispatch or release.</p>
@@ -215,7 +215,7 @@
                 </div>
 
                 <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                    <img src="{{ asset('images/gallery-shipment-3.jpg') }}" alt="Shipment image 3" class="h-56 w-full object-cover">
+                    <img src="{{ asset('images/cargo6.jpg') }}" alt="Shipment image 3" class="h-56 w-full object-cover">
                     <div class="p-5">
                         <h3 class="text-lg font-bold text-fes-navy">Cargo Handling</h3>
                         <p class="mt-2 text-sm text-gray-500">Highlight cargo loading and unloading operations across logistics hubs.</p>
@@ -223,7 +223,7 @@
                 </div>
 
                 <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                    <img src="{{ asset('images/gallery-shipment-4.jpg') }}" alt="Shipment image 4" class="h-56 w-full object-cover">
+                    <img src="{{ asset('images/cargo2.jpg') }}" alt="Shipment image 4" class="h-56 w-full object-cover">
                     <div class="p-5">
                         <h3 class="text-lg font-bold text-fes-navy">Delivery Confirmation</h3>
                         <p class="mt-2 text-sm text-gray-500">Show successful delivery photos for completed shipment milestones.</p>
@@ -287,16 +287,16 @@
 
                 <div class="grid gap-6 sm:grid-cols-2">
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <img src="{{ asset('images/container-showcase-1.jpg') }}" alt="Container showcase 1" class="h-52 w-full object-cover">
+                        <img src="{{ asset('images/cargo6.jpg') }}" alt="Container showcase 1" class="h-52 w-full object-cover">
                     </div>
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm sm:mt-10">
-                        <img src="{{ asset('images/container-showcase-2.jpg') }}" alt="Container showcase 2" class="h-52 w-full object-cover">
+                        <img src="{{ asset('images/cargo7.jpg') }}" alt="Container showcase 2" class="h-52 w-full object-cover">
                     </div>
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <img src="{{ asset('images/container-showcase-3.jpg') }}" alt="Container showcase 3" class="h-52 w-full object-cover">
+                        <img src="{{ asset('images/cargo8.jpg') }}" alt="Container showcase 3" class="h-52 w-full object-cover">
                     </div>
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm sm:mt-10">
-                        <img src="{{ asset('images/container-showcase-4.jpg') }}" alt="Container showcase 4" class="h-52 w-full object-cover">
+                        <img src="{{ asset('images/cargo9.jpg') }}" alt="Container showcase 4" class="h-52 w-full object-cover">
                     </div>
                 </div>
             </div>
