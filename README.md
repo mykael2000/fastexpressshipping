@@ -7,7 +7,7 @@ A professional shipment tracking website built with **Laravel 11**, **Tailwind C
 - 📦 **Public Tracking Page** — Track any shipment by entering a tracking number
 - 🛡️ **Admin Dashboard** — Full CRUD for shipments and tracking events
 - 📧 **Email Notifications** — Automatic emails on status changes and new events
-- 📱 **SMS Notifications** — Twilio SMS alerts (when configured)
+- 📱 **SMS Notifications** — Termii SMS alerts (primary), Twilio (fallback)
 - 🔔 **Deduplication** — Prevents duplicate notification sends
 - 📝 **Notification Log** — Full audit trail of all sent/failed/skipped notifications
 - 🚦 **Rate Limiting** — Public tracking endpoint is rate-limited
@@ -65,6 +65,28 @@ QUEUE_CONNECTION=database
 ADMIN_EMAIL=admin@fastexpressshipping.com
 ADMIN_PASSWORD=change-me-now
 ```
+
+### SMS Providers
+
+The app uses **Termii** as the primary SMS provider with **Twilio** as a fallback.
+
+```env
+# Primary SMS provider (default: termii)
+SMS_PROVIDER=termii
+SMS_FALLBACK_PROVIDER=twilio
+
+# Termii credentials (https://termii.com)
+TERMII_API_KEY=your-termii-api-key
+TERMII_SENDER_ID=YourSenderID
+TERMII_BASE_URL=https://api.ng.termii.com
+
+# Twilio fallback credentials (https://twilio.com)
+TWILIO_SID=your-twilio-sid
+TWILIO_TOKEN=your-twilio-token
+TWILIO_FROM=+15550000000
+```
+
+**Fallback behaviour:** If the primary provider throws an exception (e.g. Termii is unreachable), the `SmsManager` automatically retries with the fallback provider. The `NotificationLog` entry records which provider was ultimately used (e.g. `SMS sent successfully via termii.`).
 
 ### 3. Run migrations
 

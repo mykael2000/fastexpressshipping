@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Models\NotificationLog;
 use App\Models\Shipment;
+use App\Services\Sms\SmsManager;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,9 +14,10 @@ use Illuminate\Support\Facades\Mail;
 
 class SendShipmentNotification implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $backoff = 60;
 
     public function __construct(
@@ -23,7 +26,7 @@ class SendShipmentNotification implements ShouldQueue
         public readonly string $triggerValue, // new status | event id
     ) {}
 
-    public function handle(): void
+    public function handle(SmsManager $smsManager): void
     {
         // ---- EMAIL ----
         if ($this->shipment->notify_email && $this->shipment->recipient_email) {
@@ -32,7 +35,7 @@ class SendShipmentNotification implements ShouldQueue
 
         // ---- SMS ----
         if ($this->shipment->notify_sms && $this->shipment->recipient_phone) {
-            $this->sendSms();
+            $this->sendSms($smsManager);
         }
     }
 
@@ -53,6 +56,7 @@ class SendShipmentNotification implements ShouldQueue
 
         if ($this->isDuplicate('email', $recipient)) {
             Log::info("Skipping duplicate email for shipment #{$this->shipment->id}");
+
             return;
         }
 
@@ -63,7 +67,7 @@ class SendShipmentNotification implements ShouldQueue
                 'triggerValue' => $this->triggerValue,
             ], function ($message) use ($recipient) {
                 $message->to($recipient, $this->shipment->recipient_name)
-                    ->subject('Fast Express Shipping — Shipment Update: ' . $this->shipment->tracking_number);
+                    ->subject('Fast Express Shipping — Shipment Update: '.$this->shipment->tracking_number);
             });
 
             NotificationLog::create([
@@ -76,7 +80,7 @@ class SendShipmentNotification implements ShouldQueue
                 'message' => 'Email sent successfully.',
             ]);
         } catch (\Throwable $e) {
-            Log::error("Email notification failed for shipment #{$this->shipment->id}: " . $e->getMessage());
+            Log::error("Email notification failed for shipment #{$this->shipment->id}: ".$e->getMessage());
             NotificationLog::create([
                 'shipment_id' => $this->shipment->id,
                 'channel' => 'email',
@@ -90,36 +94,19 @@ class SendShipmentNotification implements ShouldQueue
         }
     }
 
-    private function sendSms(): void
+    private function sendSms(SmsManager $smsManager): void
     {
         $recipient = $this->shipment->recipient_phone;
 
         if ($this->isDuplicate('sms', $recipient)) {
             Log::info("Skipping duplicate SMS for shipment #{$this->shipment->id}");
-            return;
-        }
 
-        $sid   = config('services.twilio.sid');
-        $token = config('services.twilio.token');
-        $from  = config('services.twilio.from');
-
-        if (!$sid || !$token || !$from) {
-            NotificationLog::create([
-                'shipment_id' => $this->shipment->id,
-                'channel' => 'sms',
-                'recipient' => $recipient,
-                'trigger' => $this->trigger,
-                'trigger_value' => $this->triggerValue,
-                'status' => 'skipped',
-                'message' => 'Twilio credentials not configured.',
-            ]);
             return;
         }
 
         try {
-            $client = new \Twilio\Rest\Client($sid, $token);
-            $body   = $this->buildSmsBody();
-            $client->messages->create($recipient, ['from' => $from, 'body' => $body]);
+            $body = $this->buildSmsBody();
+            $provider = $smsManager->send($recipient, $body);
 
             NotificationLog::create([
                 'shipment_id' => $this->shipment->id,
@@ -128,10 +115,10 @@ class SendShipmentNotification implements ShouldQueue
                 'trigger' => $this->trigger,
                 'trigger_value' => $this->triggerValue,
                 'status' => 'sent',
-                'message' => 'SMS sent successfully.',
+                'message' => "SMS sent successfully via {$provider}.",
             ]);
         } catch (\Throwable $e) {
-            Log::error("SMS notification failed for shipment #{$this->shipment->id}: " . $e->getMessage());
+            Log::error("SMS notification failed for shipment #{$this->shipment->id}: ".$e->getMessage());
             NotificationLog::create([
                 'shipment_id' => $this->shipment->id,
                 'channel' => 'sms',
@@ -148,8 +135,9 @@ class SendShipmentNotification implements ShouldQueue
     {
         $s = $this->shipment;
         if ($this->trigger === 'status_change') {
-            return "Fast Express Shipping: Your shipment {$s->tracking_number} status updated to: {$s->statusLabel()}. Track at " . url('/track/' . $s->tracking_number);
+            return "Fast Express Shipping: Your shipment {$s->tracking_number} status updated to: {$s->statusLabel()}. Track at ".url('/track/'.$s->tracking_number);
         }
-        return "Fast Express Shipping: New update for shipment {$s->tracking_number}. Track at " . url('/track/' . $s->tracking_number);
+
+        return "Fast Express Shipping: New update for shipment {$s->tracking_number}. Track at ".url('/track/'.$s->tracking_number);
     }
 }

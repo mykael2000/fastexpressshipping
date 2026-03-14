@@ -41,4 +41,15 @@ return [
         'from'  => env('TWILIO_FROM'),
     ],
 
+    'termii' => [
+        'api_key'   => env('TERMII_API_KEY'),
+        'sender_id' => env('TERMII_SENDER_ID'),
+        'base_url'  => env('TERMII_BASE_URL', 'https://api.ng.termii.com'),
+    ],
+
+    'sms' => [
+        'provider'          => env('SMS_PROVIDER', 'termii'),
+        'fallback_provider' => env('SMS_FALLBACK_PROVIDER', 'twilio'),
+    ],
+
 ];
