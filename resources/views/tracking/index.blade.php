@@ -296,7 +296,7 @@
                         <img src="{{ asset('images/cargo8.jpg') }}" alt="Container showcase 3" class="h-52 w-full object-cover">
                     </div>
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm sm:mt-10">
-                        <img src="{{ asset('images/cargo9.jpg') }}" alt="Container showcase 4" class="h-52 w-full object-cover">
+                        <img src="{{ asset('images/cargo5.jpg') }}" alt="Container showcase 4" class="h-52 w-full object-cover">
                     </div>
                 </div>
             </div>
