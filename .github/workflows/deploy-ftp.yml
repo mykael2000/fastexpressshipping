@@ -36,7 +36,8 @@ jobs:
       - name: Build assets
         run: npm run build
 
-      - name: Upload via SFTP
+      # 1) Upload Laravel app (everything except public/) into SFTP_REMOTE_DIR
+      - name: Upload app (non-public) via SFTP
         uses: wangyucode/sftp-upload-action@v2.0.2
         with:
           host: ${{ secrets.SFTP_HOST }}
@@ -52,4 +53,40 @@ jobs:
             **/tests/**
             **/.env
             **/storage/**
-            **/storage/logs/**
+            public/**
+
+      # 2) Upload ONLY public/ contents to the website root (docroot)
+      - name: Upload public/ to web root via SFTP
+        uses: wangyucode/sftp-upload-action@v2.0.2
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          localDir: "/"
+          remoteDir: "/app"
+          exclude: |
+            **/.git*
+            **/.github/**
+
+      # 3) Patch index.php so webroot/index.php loads app from SFTP_REMOTE_DIR
+      - name: Prepare patched webroot index.php
+        run: |
+          set -e
+          mkdir -p deploy_webroot
+          cp public/index.php deploy_webroot/index.php
+
+          # Patch the two require paths to point to the deployed app directory.
+          # This makes / (webroot) behave like Laravel public/ even if docroot can't be changed.
+          sed -i "s#__DIR__\.'/../vendor/autoload.php'#__DIR__.'${{ secrets.SFTP_REMOTE_DIR }}/vendor/autoload.php'#g" deploy_webroot/index.php
+          sed -i "s#__DIR__\.'/../bootstrap/app.php'#__DIR__.'${{ secrets.SFTP_REMOTE_DIR }}/bootstrap/app.php'#g" deploy_webroot/index.php
+
+      - name: Upload patched index.php to web root via SFTP
+        uses: wangyucode/sftp-upload-action@v2.0.2
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          localDir: "deploy_webroot"
+          remoteDir: ${{ secrets.SFTP_WEB_ROOT }}
