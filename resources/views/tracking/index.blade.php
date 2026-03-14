@@ -394,7 +394,7 @@
                     </div>
 
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <img src="{{ asset('images/cargo.jpg') }}" alt="Shipment side image 2" class="h-40 w-full object-cover">
+                        <img src="{{ asset('images/cargo7.jpg') }}" alt="Shipment side image 2" class="h-40 w-full object-cover">
                         <div class="p-5">
                             <h3 class="font-bold text-fes-navy">Final Mile Delivery</h3>
                             <p class="mt-2 text-sm text-gray-500">Use this block for delivery vans, drop-off confirmation, or destination images.</p>
