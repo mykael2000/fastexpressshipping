@@ -3,6 +3,7 @@ name: Deploy via SFTP
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -36,16 +37,25 @@ jobs:
       - name: Build assets
         run: npm run build
 
-      # 1) Upload Laravel app (everything except public/) into SFTP_REMOTE_DIR
-      - name: Upload app (non-public) via SFTP
+      # 0) Sanity check: make sure we're in the repo and public/ exists
+      - name: Debug workspace
+        run: |
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          ls -la "$GITHUB_WORKSPACE"
+          ls -la "$GITHUB_WORKSPACE/public" || true
+
+      # 1) Upload the Laravel app (everything EXCEPT public/) into ./app on the server.
+      # Server SFTP root is /homepages/5/d4299721497/htdocs, so this becomes:
+      #   /homepages/5/d4299721497/htdocs/app
+      - name: Upload app (non-public) to ./app
         uses: wangyucode/sftp-upload-action@v2.0.2
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          localDir: "./"
-          remoteDir: ${{ secrets.SFTP_REMOTE_DIR }}
+          localDir: "${{ github.workspace }}"
+          remoteDir: "./app"
           exclude: |
             **/.git*
             **/.github/**
@@ -55,38 +65,63 @@ jobs:
             **/storage/**
             public/**
 
-      # 2) Upload ONLY public/ contents to the website root (docroot)
-      - name: Upload public/ to web root via SFTP
+      # 2) Upload ONLY the contents of public/ into the web root (./)
+      # This becomes:
+      #   /homepages/5/d4299721497/htdocs
+      - name: Upload public/ to web root ./
         uses: wangyucode/sftp-upload-action@v2.0.2
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          localDir: "./"
-          remoteDir: "./app"
+          localDir: "${{ github.workspace }}/public"
+          remoteDir: "./"
           exclude: |
             **/.git*
             **/.github/**
 
-      # 3) Patch index.php so webroot/index.php loads app from SFTP_REMOTE_DIR
+      # 3) Patch index.php so the webroot index.php loads the app from ./app
+      # Webroot file: /homepages/.../htdocs/index.php
+      # App files:     /homepages/.../htdocs/app/vendor/autoload.php, /app/bootstrap/app.php
       - name: Prepare patched webroot index.php
         run: |
           set -e
+          rm -rf deploy_webroot
           mkdir -p deploy_webroot
           cp public/index.php deploy_webroot/index.php
 
-          # Patch the two require paths to point to the deployed app directory.
-          # This makes / (webroot) behave like Laravel public/ even if docroot can't be changed.
-          sed -i "s#__DIR__\.'/../vendor/autoload.php'#__DIR__.'${{ secrets.SFTP_REMOTE_DIR }}/vendor/autoload.php'#g" deploy_webroot/index.php
-          sed -i "s#__DIR__\.'/../bootstrap/app.php'#__DIR__.'${{ secrets.SFTP_REMOTE_DIR }}/bootstrap/app.php'#g" deploy_webroot/index.php
+          # Replace Laravel's default relative paths with paths pointing to ./app
+          sed -i "s#__DIR__\.'/../vendor/autoload.php'#__DIR__.'\/app\/vendor\/autoload.php'#g" deploy_webroot/index.php
+          sed -i "s#__DIR__\.'/../bootstrap/app.php'#__DIR__.'\/app\/bootstrap\/app.php'#g" deploy_webroot/index.php
 
-      - name: Upload patched index.php to web root via SFTP
+      - name: Upload patched index.php to web root ./
         uses: wangyucode/sftp-upload-action@v2.0.2
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          localDir: "deploy_webroot"
-          remoteDir: ${{ secrets.SFTP_WEB_ROOT }}
+          localDir: "${{ github.workspace }}/deploy_webroot"
+          remoteDir: "./"
+
+      # 4) (Strongly recommended) Block direct web access to /app on Apache hosts.
+      # If your host is Apache, this helps prevent exposing app files.
+      - name: Create deny rules for /app (Apache)
+        run: |
+          set -e
+          rm -rf deploy_app_protect
+          mkdir -p deploy_app_protect
+          cat > deploy_app_protect/.htaccess <<'EOF'
+          Require all denied
+          EOF
+
+      - name: Upload /app protection .htaccess
+        uses: wangyucode/sftp-upload-action@v2.0.2
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          localDir: "${{ github.workspace }}/deploy_app_protect"
+          remoteDir: "./app"
