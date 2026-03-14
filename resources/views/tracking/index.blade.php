@@ -372,7 +372,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid gap-6 lg:grid-cols-3">
                 <div class="relative overflow-hidden rounded-3xl lg:col-span-2">
-                    <img src="{{ asset('images/warehouse-banner.jpg') }}" alt="Warehouse and shipment operations" class="h-full min-h-[320px] w-full object-cover">
+                    <img src="{{ asset('images/cargo6.jpg') }}" alt="Warehouse and shipment operations" class="h-full min-h-[320px] w-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-r from-fes-navy/90 via-fes-navy/70 to-transparent"></div>
                     <div class="absolute inset-0 flex items-end p-8">
                         <div class="max-w-xl">
@@ -386,7 +386,7 @@
 
                 <div class="space-y-6">
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <img src="{{ asset('images/shipment-side-1.jpg') }}" alt="Shipment side image 1" class="h-40 w-full object-cover">
+                        <img src="{{ asset('images/cargo4.jpg') }}" alt="Shipment side image 1" class="h-40 w-full object-cover">
                         <div class="p-5">
                             <h3 class="font-bold text-fes-navy">Port Handling</h3>
                             <p class="mt-2 text-sm text-gray-500">Great place for port or customs checkpoint images.</p>
@@ -394,7 +394,7 @@
                     </div>
 
                     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
-                        <img src="{{ asset('images/shipment-side-2.jpg') }}" alt="Shipment side image 2" class="h-40 w-full object-cover">
+                        <img src="{{ asset('images/cargo.jpg') }}" alt="Shipment side image 2" class="h-40 w-full object-cover">
                         <div class="p-5">
                             <h3 class="font-bold text-fes-navy">Final Mile Delivery</h3>
                             <p class="mt-2 text-sm text-gray-500">Use this block for delivery vans, drop-off confirmation, or destination images.</p>
