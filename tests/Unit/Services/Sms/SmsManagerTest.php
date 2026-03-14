@@ -111,4 +111,59 @@ class SmsManagerTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $manager->send('+2348012345678', 'Hello');
     }
+
+    // -----------------------------------------------------------------------
+    // SNS-specific scenarios
+    // -----------------------------------------------------------------------
+
+    public function test_sns_as_primary_sends_successfully(): void
+    {
+        $sns = $this->makeClient('sns', true);
+        $sns->expects($this->once())->method('send');
+
+        $termii = $this->makeClient('termii', true);
+        $termii->expects($this->never())->method('send');
+
+        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+        $result = $manager->send('+12125551234', 'Hello');
+
+        $this->assertSame('sns', $result);
+    }
+
+    public function test_falls_back_to_termii_when_sns_fails(): void
+    {
+        $sns = $this->makeClient('sns', true, new \RuntimeException('SNS error'));
+        $termii = $this->makeClient('termii', true);
+        $termii->expects($this->once())->method('send');
+
+        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+        $result = $manager->send('+12125551234', 'Hello');
+
+        $this->assertSame('termii', $result);
+    }
+
+    public function test_falls_back_to_termii_when_sns_not_configured(): void
+    {
+        $sns = $this->makeClient('sns', false);
+        $sns->expects($this->never())->method('send');
+
+        $termii = $this->makeClient('termii', true);
+        $termii->expects($this->once())->method('send');
+
+        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+        $result = $manager->send('+12125551234', 'Hello');
+
+        $this->assertSame('termii', $result);
+    }
+
+    public function test_throws_when_sns_and_termii_both_fail(): void
+    {
+        $sns = $this->makeClient('sns', true, new \RuntimeException('SNS error'));
+        $termii = $this->makeClient('termii', true, new \RuntimeException('Termii error'));
+
+        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+
+        $this->expectException(\RuntimeException::class);
+        $manager->send('+12125551234', 'Hello');
+    }
 }

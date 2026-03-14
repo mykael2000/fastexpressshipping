@@ -35,6 +35,12 @@ return [
         ],
     ],
 
+    'sns' => [
+        'region'    => env('AWS_DEFAULT_REGION', 'us-east-1'),
+        'sms_type'  => env('AWS_SNS_SMS_TYPE', 'Transactional'),
+        'sender_id' => env('AWS_SNS_SENDER_ID', ''),
+    ],
+
     'twilio' => [
         'sid'   => env('TWILIO_SID'),
         'token' => env('TWILIO_TOKEN'),
@@ -48,8 +54,8 @@ return [
     ],
 
     'sms' => [
-        'provider'          => env('SMS_PROVIDER', 'termii'),
-        'fallback_provider' => env('SMS_FALLBACK_PROVIDER', 'twilio'),
+        'provider'          => env('SMS_PROVIDER', 'sns'),
+        'fallback_provider' => env('SMS_FALLBACK_PROVIDER', 'termii'),
     ],
 
 ];

@@ -7,7 +7,7 @@ A professional shipment tracking website built with **Laravel 11**, **Tailwind C
 - 📦 **Public Tracking Page** — Track any shipment by entering a tracking number
 - 🛡️ **Admin Dashboard** — Full CRUD for shipments and tracking events
 - 📧 **Email Notifications** — Automatic emails on status changes and new events
-- 📱 **SMS Notifications** — Termii SMS alerts (primary), Twilio (fallback)
+- 📱 **SMS Notifications** — AWS SNS (primary, us-east-1), Termii (fallback)
 - 🔔 **Deduplication** — Prevents duplicate notification sends
 - 📝 **Notification Log** — Full audit trail of all sent/failed/skipped notifications
 - 🚦 **Rate Limiting** — Public tracking endpoint is rate-limited
@@ -68,25 +68,47 @@ ADMIN_PASSWORD=change-me-now
 
 ### SMS Providers
 
-The app uses **Termii** as the primary SMS provider with **Twilio** as a fallback.
+The app uses **AWS SNS** (us-east-1) as the primary SMS provider with **Termii** as the fallback. Phone numbers must be stored in **E.164 format** (e.g. `+12125551234`, `+2348012345678`).
 
 ```env
-# Primary SMS provider (default: termii)
-SMS_PROVIDER=termii
-SMS_FALLBACK_PROVIDER=twilio
+# Primary SMS provider (default: sns)
+SMS_PROVIDER=sns
+SMS_FALLBACK_PROVIDER=termii
 
-# Termii credentials (https://termii.com)
+# AWS SNS SMS settings
+# AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are shared with SES above.
+AWS_DEFAULT_REGION=us-east-1
+AWS_SNS_SMS_TYPE=Transactional        # Transactional or Promotional
+# AWS_SNS_SENDER_ID=FastExpress       # optional – not supported in all countries
+
+# Termii fallback credentials (https://termii.com)
 TERMII_API_KEY=your-termii-api-key
 TERMII_SENDER_ID=YourSenderID
 TERMII_BASE_URL=https://api.ng.termii.com
 
-# Twilio fallback credentials (https://twilio.com)
+# Twilio (legacy / optional secondary fallback)
+# Set SMS_FALLBACK_PROVIDER=twilio to use instead of Termii.
 TWILIO_SID=your-twilio-sid
 TWILIO_TOKEN=your-twilio-token
 TWILIO_FROM=+15550000000
 ```
 
-**Fallback behaviour:** If the primary provider throws an exception (e.g. Termii is unreachable), the `SmsManager` automatically retries with the fallback provider. The `NotificationLog` entry records which provider was ultimately used (e.g. `SMS sent successfully via termii.`).
+**Fallback behaviour:** If the primary provider (SNS) throws an exception, the `SmsManager` automatically retries with the fallback provider. The `NotificationLog` entry records which provider was ultimately used (e.g. `SMS sent successfully via sns.`).
+
+**AWS IAM policy** — grant the deploy user/role these minimum permissions:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["ses:SendEmail", "ses:SendRawEmail", "sns:Publish"],
+      "Resource": "*"
+    }
+  ]
+}
+```
 
 ### 3. Run migrations
 
