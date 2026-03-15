@@ -264,23 +264,35 @@
                         Dedicated Areas for Container and Cargo Images
                     </h2>
                     <p class="mt-4 text-lg text-gray-600">
-                        Present container shipments, warehouse operations, cargo processing and transport visuals in a more professional way.
+                        This section showcases key visual moments from our container and cargo operations. From organized container yards to cargo preparation and final delivery milestones, these images provide insight into the efficiency, safety standards, and professionalism that define our logistics process.
+
+                        <br><br>By presenting real operational visuals, we give our clients a transparent look into how shipments are handled, monitored, and moved across our global transport network.
                     </p>
 
                     <div class="mt-8 space-y-4">
                         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                             <h3 class="font-bold text-fes-navy">Container Yard Photos</h3>
-                            <p class="mt-2 text-sm text-gray-500">Use this section to show stacked containers, movement at terminals and yard organization.</p>
+                            <p class="mt-2 text-sm text-gray-500">Our container yards are designed to ensure smooth cargo handling and efficient logistics coordination. This section highlights the organized stacking of containers, terminal movements, and the systematic layout that allows for fast loading, unloading, and dispatch.
+                                <br><br>
+                                The images demonstrate how shipments are securely managed within our facilities while maintaining strict safety and operational standards. Each container in our yard represents a shipment being carefully tracked and prepared for the next stage of its journey.
+                            </p>
                         </div>
 
                         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                             <h3 class="font-bold text-fes-navy">Shipment Processing Photos</h3>
-                            <p class="mt-2 text-sm text-gray-500">Add visuals for packaging, inspection, loading, scanning and clearance stages.</p>
+                            <p class="mt-2 text-sm text-gray-500">Shipment processing is one of the most critical stages in the logistics chain. Here we present visuals showing how cargo is prepared before transportation, including packaging, inspection, labeling, scanning, and documentation procedures.
+                                  <br><br>
+                                These images reflect the careful attention given to each shipment to ensure it meets safety regulations, customs requirements, and transportation standards. Through structured processing and quality checks, we ensure that every package moves forward securely and efficiently.
+                            </p>
                         </div>
 
                         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                             <h3 class="font-bold text-fes-navy">Delivery Milestone Photos</h3>
-                            <p class="mt-2 text-sm text-gray-500">Show images for transit checkpoints, destination arrival and delivery confirmation.</p>
+                            <p class="mt-2 text-sm text-gray-500">
+                                This section captures important milestones in the shipment journey—from transit checkpoints to final arrival at the destination. The images represent the progress of cargo as it moves through transportation networks and reaches its delivery point.
+                                  <br><br>
+                               By documenting these stages, we provide transparency and assurance to clients that their shipments are being carefully tracked and handled until successful delivery confirmation.
+                            </p>
                         </div>
                     </div>
                 </div>
