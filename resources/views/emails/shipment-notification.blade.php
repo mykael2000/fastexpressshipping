@@ -37,13 +37,13 @@
 
         <table class="detail-table">
             <tr><td>Tracking Number</td><td>{{ $shipment->tracking_number }}</td></tr>
-            <tr><td>Status</td><td>{{ $shipment->statusLabel() }}</td></tr>
+            {{-- <tr><td>Status</td><td>{{ $shipment->statusLabel() }}</td></tr>
             <tr><td>Origin</td><td>{{ $shipment->origin }}</td></tr>
             <tr><td>Destination</td><td>{{ $shipment->destination }}</td></tr>
             <tr><td>Service Level</td><td>{{ ucfirst($shipment->service_level) }}</td></tr>
             @if($shipment->eta)
             <tr><td>Estimated Delivery</td><td>{{ $shipment->eta->format('M d, Y') }}</td></tr>
-            @endif
+            @endif --}}
         </table>
 
         <div class="cta">
