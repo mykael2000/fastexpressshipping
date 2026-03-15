@@ -90,7 +90,7 @@
     </div>
 
     {{-- Other grouped settings --}}
-    @foreach($settings->groupBy('group') as $group => $groupSettings)
+    {{-- @foreach($settings->groupBy('group') as $group => $groupSettings)
         @if($group === 'crypto') @continue @endif
         <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
             <h3 class="font-bold text-fes-navy mb-5 capitalize">{{ $group ?: 'General' }} Settings</h3>
@@ -110,7 +110,7 @@
                 @endforeach
             </div>
         </div>
-    @endforeach
+    @endforeach --}}
 
     <div class="flex items-center gap-4">
         <button type="submit" class="bg-fes-orange text-white font-semibold px-8 py-2.5 rounded-lg hover:bg-orange-600 transition">Save Settings</button>
