@@ -27,8 +27,9 @@ class TrackingController extends Controller
         }
 
         $officeAddress = SiteSetting::get('contact_address');
+        $paymentSettings = $this->paymentSettings();
 
-        return view('tracking.result', compact('shipment', 'officeAddress'));
+        return view('tracking.result', compact('shipment', 'officeAddress', 'paymentSettings'));
     }
 
     public function show(string $trackingNumber)
@@ -38,7 +39,21 @@ class TrackingController extends Controller
             ->firstOrFail();
 
         $officeAddress = SiteSetting::get('contact_address');
+        $paymentSettings = $this->paymentSettings();
 
-        return view('tracking.result', compact('shipment', 'officeAddress'));
+        return view('tracking.result', compact('shipment', 'officeAddress', 'paymentSettings'));
+    }
+
+    private function paymentSettings(): array
+    {
+        return [
+            'bank_name'           => SiteSetting::get('bank_name'),
+            'bank_account_name'   => SiteSetting::get('bank_account_name'),
+            'bank_account_number' => SiteSetting::get('bank_account_number'),
+            'bank_note'           => SiteSetting::get('bank_note'),
+            'wallet_btc'          => SiteSetting::get('wallet_btc'),
+            'wallet_eth'          => SiteSetting::get('wallet_eth'),
+            'wallet_usdt_trc20'   => SiteSetting::get('wallet_usdt_trc20'),
+        ];
     }
 }

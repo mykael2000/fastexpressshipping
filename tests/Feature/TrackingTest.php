@@ -68,14 +68,14 @@ class TrackingTest extends TestCase
     {
         $shipment = Shipment::factory()->create([
             'tracking_number' => 'NEWFIELDS001',
-            'payment_mode' => 'cash',
+            'payment_mode' => 'bank',
             'weight_kg' => '3.75',
             'remark' => 'Fragile item - cost $20',
         ]);
 
         $response = $this->get('/track/NEWFIELDS001');
         $response->assertStatus(200);
-        $response->assertSee('Cash');
+        $response->assertSee('Bank Transfer');
         $response->assertSee('3.75 kg');
         $response->assertSee('Fragile item - cost $20');
     }
@@ -107,5 +107,68 @@ class TrackingTest extends TestCase
         $response->assertStatus(200);
         // Page still renders without errors; dashes shown for missing fields
         $response->assertSee('—');
+    }
+
+    public function test_tracking_shows_unpaid_with_bank_details(): void
+    {
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'bank_name'],
+            ['value' => 'First National Bank', 'group' => 'bank']
+        );
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'bank_account_number'],
+            ['value' => '1234567890', 'group' => 'bank']
+        );
+
+        $shipment = Shipment::factory()->create([
+            'tracking_number' => 'BANKPAY001',
+            'payment_mode' => 'bank',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $response = $this->get('/track/BANKPAY001');
+        $response->assertStatus(200);
+        $response->assertSee('UNPAID');
+        $response->assertSee('First National Bank');
+        $response->assertSee('1234567890');
+    }
+
+    public function test_tracking_shows_paid_and_hides_payment_details(): void
+    {
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'bank_account_number'],
+            ['value' => '9999999999', 'group' => 'bank']
+        );
+
+        $shipment = Shipment::factory()->create([
+            'tracking_number' => 'PAIDSHIP001',
+            'payment_mode' => 'bank',
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        $response = $this->get('/track/PAIDSHIP001');
+        $response->assertStatus(200);
+        $response->assertSee('PAID');
+        $response->assertDontSee('9999999999');
+    }
+
+    public function test_tracking_shows_unpaid_with_crypto_wallet(): void
+    {
+        \App\Models\SiteSetting::updateOrCreate(
+            ['key' => 'wallet_btc'],
+            ['value' => 'bc1qexamplewallet', 'group' => 'crypto']
+        );
+
+        $shipment = Shipment::factory()->create([
+            'tracking_number' => 'BTCPAY001',
+            'payment_mode' => 'btc',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $response = $this->get('/track/BTCPAY001');
+        $response->assertStatus(200);
+        $response->assertSee('UNPAID');
+        $response->assertSee('bc1qexamplewallet');
     }
 }

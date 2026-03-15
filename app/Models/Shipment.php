@@ -12,13 +12,14 @@ class Shipment extends Model
         'tracking_number', 'status', 'origin', 'destination',
         'recipient_name', 'recipient_email', 'recipient_phone',
         'eta', 'shipped_date', 'service_level', 'notes',
-        'payment_mode', 'weight_kg', 'remark',
+        'payment_mode', 'payment_status', 'paid_at', 'weight_kg', 'remark',
         'notify_email', 'notify_sms', 'updated_by',
     ];
 
     protected $casts = [
         'eta' => 'datetime',
         'shipped_date' => 'datetime',
+        'paid_at' => 'datetime',
         'notify_email' => 'boolean',
         'notify_sms' => 'boolean',
         'weight_kg' => 'decimal:2',
@@ -50,11 +51,10 @@ class Shipment extends Model
     public static function paymentModeOptions(): array
     {
         return [
-            'cash'          => 'Cash',
-            'bank_transfer' => 'Bank Transfer',
-            'card'          => 'Card',
-            'pos'           => 'POS',
-            'crypto'        => 'Crypto',
+            'bank'         => 'Bank Transfer',
+            'btc'          => 'BTC',
+            'eth'          => 'ETH',
+            'usdt_trc20'   => 'USDT (TRC20)',
         ];
     }
 

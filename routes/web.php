@@ -51,6 +51,8 @@ Route::middleware(['auth', 'verified', 'role:admin,staff'])->prefix('admin')->na
 
     // Existing shipments
     Route::resource('shipments', ShipmentController::class);
+    Route::post('shipments/{shipment}/mark-paid', [ShipmentController::class, 'markPaid'])->name('shipments.mark-paid');
+    Route::post('shipments/{shipment}/mark-unpaid', [ShipmentController::class, 'markUnpaid'])->name('shipments.mark-unpaid');
     Route::prefix('shipments/{shipment}/events')->name('shipments.events.')->group(function () {
         Route::get('/create', [TrackingEventController::class, 'create'])->name('create');
         Route::post('/', [TrackingEventController::class, 'store'])->name('store');

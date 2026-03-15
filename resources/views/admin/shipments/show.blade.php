@@ -12,6 +12,17 @@
     <div class="flex gap-2">
         <a href="{{ route('admin.shipments.edit', $shipment) }}" class="bg-fes-orange hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">Edit</a>
         <a href="{{ route('track.show', $shipment->tracking_number) }}" target="_blank" class="border border-gray-200 text-gray-600 hover:border-fes-navy px-4 py-2 rounded-lg text-sm transition">Public View</a>
+        @if($shipment->payment_status === 'unpaid')
+        <form method="POST" action="{{ route('admin.shipments.mark-paid', $shipment) }}">
+            @csrf
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">Mark as Paid</button>
+        </form>
+        @else
+        <form method="POST" action="{{ route('admin.shipments.mark-unpaid', $shipment) }}">
+            @csrf
+            <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">Mark as Unpaid</button>
+        </form>
+        @endif
     </div>
 </div>
 
@@ -100,6 +111,31 @@
 
     <!-- Right Column -->
     <div class="space-y-6">
+        <!-- Payment Info -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h3 class="font-semibold text-fes-navy mb-3">Payment</h3>
+            <ul class="space-y-2 text-sm">
+                <li class="flex items-center justify-between">
+                    <span class="text-gray-500">Method</span>
+                    <span class="font-medium text-fes-navy">{{ $shipment->paymentModeLabel() }}</span>
+                </li>
+                <li class="flex items-center justify-between">
+                    <span class="text-gray-500">Status</span>
+                    @if($shipment->payment_status === 'paid')
+                        <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">PAID</span>
+                    @else
+                        <span class="bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-0.5 rounded-full">UNPAID</span>
+                    @endif
+                </li>
+                @if($shipment->paid_at)
+                <li class="flex items-center justify-between">
+                    <span class="text-gray-500">Paid at</span>
+                    <span class="font-medium text-fes-navy text-xs">{{ $shipment->paid_at->format('M d, Y H:i') }}</span>
+                </li>
+                @endif
+            </ul>
+        </div>
+
         <!-- Notification Prefs -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h3 class="font-semibold text-fes-navy mb-3">Notification Preferences</h3>

@@ -98,6 +98,26 @@ class ShipmentController extends Controller
             ->with('success', 'Shipment deleted.');
     }
 
+    public function markPaid(Shipment $shipment)
+    {
+        $shipment->update([
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        return back()->with('success', 'Shipment marked as paid.');
+    }
+
+    public function markUnpaid(Shipment $shipment)
+    {
+        $shipment->update([
+            'payment_status' => 'unpaid',
+            'paid_at' => null,
+        ]);
+
+        return back()->with('success', 'Shipment marked as unpaid.');
+    }
+
     private function validated(Request $request, ?int $ignoreId = null): array
     {
         $trackingUnique = 'unique:shipments,tracking_number';
