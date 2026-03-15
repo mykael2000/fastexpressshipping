@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipment;
+use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 
 class TrackingController extends Controller
@@ -25,7 +26,9 @@ class TrackingController extends Controller
             return back()->withErrors(['tracking_number' => 'No shipment found with that tracking number. Please check and try again.'])->withInput();
         }
 
-        return view('tracking.result', compact('shipment'));
+        $officeAddress = SiteSetting::get('contact_address');
+
+        return view('tracking.result', compact('shipment', 'officeAddress'));
     }
 
     public function show(string $trackingNumber)
@@ -34,6 +37,8 @@ class TrackingController extends Controller
             ->where('tracking_number', strtoupper($trackingNumber))
             ->firstOrFail();
 
-        return view('tracking.result', compact('shipment'));
+        $officeAddress = SiteSetting::get('contact_address');
+
+        return view('tracking.result', compact('shipment', 'officeAddress'));
     }
 }

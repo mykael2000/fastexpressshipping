@@ -12,6 +12,7 @@ class Shipment extends Model
         'tracking_number', 'status', 'origin', 'destination',
         'recipient_name', 'recipient_email', 'recipient_phone',
         'eta', 'shipped_date', 'service_level', 'notes',
+        'payment_mode', 'weight_kg', 'remark',
         'notify_email', 'notify_sms', 'updated_by',
     ];
 
@@ -20,6 +21,7 @@ class Shipment extends Model
         'shipped_date' => 'datetime',
         'notify_email' => 'boolean',
         'notify_sms' => 'boolean',
+        'weight_kg' => 'decimal:2',
     ];
 
     public function trackingEvents()
@@ -35,6 +37,25 @@ class Shipment extends Model
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function paymentModeLabel(): string
+    {
+        if (!$this->payment_mode) {
+            return '—';
+        }
+        return static::paymentModeOptions()[$this->payment_mode] ?? ucfirst(str_replace('_', ' ', $this->payment_mode));
+    }
+
+    public static function paymentModeOptions(): array
+    {
+        return [
+            'cash'          => 'Cash',
+            'bank_transfer' => 'Bank Transfer',
+            'card'          => 'Card',
+            'pos'           => 'POS',
+            'crypto'        => 'Crypto',
+        ];
     }
 
     public static function statusOptions(): array
