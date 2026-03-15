@@ -8,7 +8,30 @@
             placeholder="e.g. FES1234567890" {{ $isEdit ? '' : 'required' }}>
         @error('tracking_number')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
     </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const trackingInput = document.querySelector('input[name="tracking_number"]');
+
+    // Only generate if creating (field empty)
+    if (trackingInput && trackingInput.value.trim() === "") {
+
+        function generateTracking() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let result = "FES";
+
+            for (let i = 0; i < 10; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            return result;
+        }
+
+        trackingInput.value = generateTracking();
+    }
+
+});
+</script>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Status <span class="text-red-500">*</span></label>
         <select name="status" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange">
