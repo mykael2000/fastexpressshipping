@@ -94,8 +94,8 @@
                     </div>
                 @else
                     @php
-                        $walletKey = 'wallet_' . $shipment->payment_mode;
-                        $walletAddress = $paymentSettings[$walletKey] ?? null;
+                        $walletKey = $shipment->walletSettingKey();
+                        $walletAddress = $walletKey ? ($paymentSettings[$walletKey] ?? null) : null;
                     @endphp
                     @if($walletAddress)
                         <p class="text-xs text-gray-400 mb-1">Send payment to:</p>

@@ -48,6 +48,14 @@ class Shipment extends Model
         return static::paymentModeOptions()[$this->payment_mode] ?? ucfirst(str_replace('_', ' ', $this->payment_mode));
     }
 
+    public function walletSettingKey(): ?string
+    {
+        if (!$this->payment_mode || $this->payment_mode === 'bank') {
+            return null;
+        }
+        return 'wallet_' . $this->payment_mode;
+    }
+
     public static function paymentModeOptions(): array
     {
         return [

@@ -93,8 +93,7 @@ window.smartsupp||(function(d) {
 </script>
 <noscript>Powered by <a href="https://www.smartsupp.com" target="_blank">Smartsupp</a></noscript>
 
-@php $whatsappNumber = \App\Models\SiteSetting::get('whatsapp_number'); @endphp
-@if($whatsappNumber)
+@if($whatsappNumber ?? false)
 <a href="https://wa.me/{{ $whatsappNumber }}" target="_blank" rel="noopener noreferrer"
    title="Chat with us on WhatsApp"
    class="fixed bottom-6 left-6 z-50 w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-200">
