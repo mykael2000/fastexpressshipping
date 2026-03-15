@@ -3,7 +3,15 @@ name: Deploy via SFTP
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - '.gitignore'
   workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -15,6 +23,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed files
+        id: changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -E '^(resources/|public/|package\.json|package-lock\.json|vite\.config\.)' > /dev/null; then
+            echo "frontend=true" >> $GITHUB_OUTPUT
+          else
+            echo "frontend=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -35,25 +54,22 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Install PHP dependencies
-        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-progress
 
       - name: Set up Node.js
+        if: steps.changes.outputs.frontend == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install JS dependencies
+        if: steps.changes.outputs.frontend == 'true'
         run: npm ci
 
       - name: Build assets
+        if: steps.changes.outputs.frontend == 'true'
         run: npm run build
-
-      - name: Debug workspace
-        run: |
-          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
-          ls -la "$GITHUB_WORKSPACE"
-          ls -la "$GITHUB_WORKSPACE/public" || true
 
       - name: Upload app (non-public) to ./app
         uses: wangyucode/sftp-upload-action@v2.0.2
@@ -72,6 +88,8 @@ jobs:
             **/.env
             **/storage/**
             public/**
+            deploy_webroot/**
+            deploy_app_protect/**
 
       - name: Upload public/ to web root ./
         uses: wangyucode/sftp-upload-action@v2.0.2
@@ -113,3 +131,13 @@ jobs:
           cat > deploy_app_protect/.htaccess <<'EOF'
           Require all denied
           EOF
+
+      - name: Upload app protection
+        uses: wangyucode/sftp-upload-action@v2.0.2
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT }}
+          localDir: "${{ github.workspace }}/deploy_app_protect"
+          remoteDir: "./app"
