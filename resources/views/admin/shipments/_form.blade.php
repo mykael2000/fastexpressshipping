@@ -87,6 +87,26 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
 
     <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
+        <select name="payment_mode" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('payment_mode') border-red-400 @enderror">
+            <option value="">— Select —</option>
+            @foreach($paymentModeOptions as $val => $label)
+                <option value="{{ $val }}" @selected(old('payment_mode', $isEdit ? $shipment->payment_mode : '') === $val)>{{ $label }}</option>
+            @endforeach
+        </select>
+        @error('payment_mode')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+        <input type="number" name="weight_kg" value="{{ old('weight_kg', $isEdit ? $shipment->weight_kg : '') }}"
+            step="0.01" min="0"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('weight_kg') border-red-400 @enderror"
+            placeholder="e.g. 1.50">
+        @error('weight_kg')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Shipped Date</label>
         <input type="datetime-local" name="shipped_date" value="{{ old('shipped_date', $isEdit && $shipment->shipped_date ? $shipment->shipped_date->format('Y-m-d\TH:i') : '') }}"
             class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange">
@@ -103,6 +123,12 @@ document.addEventListener("DOMContentLoaded", function () {
     <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
     <textarea name="notes" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('notes') border-red-400 @enderror">{{ old('notes', $isEdit ? $shipment->notes : '') }}</textarea>
     @error('notes')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+</div>
+
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Remark <span class="text-gray-400 font-normal text-xs">(admin notes, cost, etc.)</span></label>
+    <textarea name="remark" rows="2" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('remark') border-red-400 @enderror">{{ old('remark', $isEdit ? $shipment->remark : '') }}</textarea>
+    @error('remark')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
 </div>
 
 <div class="flex gap-6">

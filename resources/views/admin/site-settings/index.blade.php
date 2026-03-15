@@ -51,9 +51,14 @@
                 @foreach($groupSettings as $setting)
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ ucfirst(str_replace('_', ' ', $setting->key)) }}</label>
+                    @if($setting->key === 'contact_address')
+                    <textarea name="settings[{{ $setting->key }}]" rows="2"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange">{{ old('settings.'.$setting->key, $setting->value) }}</textarea>
+                    @else
                     <input type="text" name="settings[{{ $setting->key }}]"
                            value="{{ old('settings.'.$setting->key, $setting->value) }}"
                            class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange">
+                    @endif
                 </div>
                 @endforeach
             </div>

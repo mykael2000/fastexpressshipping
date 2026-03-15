@@ -39,6 +39,7 @@ class ShipmentController extends Controller
         return view('admin.shipments.create', [
             'statusOptions' => Shipment::statusOptions(),
             'serviceLevelOptions' => Shipment::serviceLevelOptions(),
+            'paymentModeOptions' => Shipment::paymentModeOptions(),
         ]);
     }
 
@@ -70,6 +71,7 @@ class ShipmentController extends Controller
             'shipment' => $shipment,
             'statusOptions' => Shipment::statusOptions(),
             'serviceLevelOptions' => Shipment::serviceLevelOptions(),
+            'paymentModeOptions' => Shipment::paymentModeOptions(),
         ]);
     }
 
@@ -115,6 +117,9 @@ class ShipmentController extends Controller
             'shipped_date'     => ['nullable', 'date'],
             'service_level'    => ['required', 'string', 'in:' . implode(',', array_keys(Shipment::serviceLevelOptions()))],
             'notes'            => ['nullable', 'string', 'max:2000'],
+            'payment_mode'     => ['nullable', 'string', 'in:' . implode(',', array_keys(Shipment::paymentModeOptions()))],
+            'weight_kg'        => ['nullable', 'numeric', 'min:0'],
+            'remark'           => ['nullable', 'string', 'max:2000'],
             'notify_email'     => ['boolean'],
             'notify_sms'       => ['boolean'],
         ]);

@@ -42,6 +42,8 @@
                     ['label' => 'Recipient', 'value' => $shipment->recipient_name],
                     ['label' => 'Shipped', 'value' => $shipment->shipped_date ? $shipment->shipped_date->format('M d, Y') : '—'],
                     ['label' => 'Est. Delivery', 'value' => $shipment->eta ? $shipment->eta->format('M d, Y') : '—'],
+                    ['label' => 'Payment Mode', 'value' => $shipment->paymentModeLabel()],
+                    ['label' => 'Weight', 'value' => $shipment->weight_kg !== null ? number_format((float) $shipment->weight_kg, 2) . ' kg' : '—'],
                 ];
             @endphp
             @foreach($fields as $field)
@@ -51,6 +53,13 @@
             </div>
             @endforeach
         </div>
+
+        @if($shipment->remark)
+        <div class="bg-white px-5 py-4 border-t border-gray-100">
+            <p class="text-gray-400 text-xs uppercase tracking-widest mb-1">Remark</p>
+            <p class="text-fes-navy text-sm">{{ $shipment->remark }}</p>
+        </div>
+        @endif
     </div>
 
     <!-- Tracking Timeline -->
@@ -104,6 +113,14 @@
         </div>
         @endif
     </div>
+
+    @if($officeAddress)
+    <!-- Office Address -->
+    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mt-6">
+        <h2 class="text-fes-navy font-bold text-lg mb-2">Our Address</h2>
+        <p class="text-gray-600 text-sm">{{ $officeAddress }}</p>
+    </div>
+    @endif
 
 </div>
 @endsection
