@@ -60,6 +60,51 @@
             <p class="text-fes-navy text-sm">{{ $shipment->remark }}</p>
         </div>
         @endif
+
+        {{-- Payment Section --}}
+        @if($shipment->payment_mode)
+        <div class="bg-white px-5 py-4 border-t border-gray-100">
+            <p class="text-gray-400 text-xs uppercase tracking-widest mb-3">Payment</p>
+            @if($shipment->payment_status === 'paid')
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full uppercase">PAID</span>
+                    @if($shipment->paid_at)
+                        <span class="text-gray-400 text-xs">{{ $shipment->paid_at->format('M d, Y H:i') }}</span>
+                    @endif
+                </div>
+            @else
+                <div class="mb-3">
+                    <span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1 rounded-full uppercase">UNPAID</span>
+                </div>
+                <p class="text-fes-navy text-sm font-medium mb-2">Payment Method: {{ $shipment->paymentModeLabel() }}</p>
+                @if($shipment->payment_mode === 'bank')
+                    <div class="space-y-1 text-sm text-gray-700">
+                        @if($paymentSettings['bank_name'])
+                            <p><span class="text-gray-400 text-xs">Bank:</span> {{ $paymentSettings['bank_name'] }}</p>
+                        @endif
+                        @if($paymentSettings['bank_account_name'])
+                            <p><span class="text-gray-400 text-xs">Account Name:</span> {{ $paymentSettings['bank_account_name'] }}</p>
+                        @endif
+                        @if($paymentSettings['bank_account_number'])
+                            <p><span class="text-gray-400 text-xs">Account Number:</span> <span class="font-mono font-semibold">{{ $paymentSettings['bank_account_number'] }}</span></p>
+                        @endif
+                        @if($paymentSettings['bank_note'])
+                            <p class="text-gray-500 text-xs italic mt-1">{{ $paymentSettings['bank_note'] }}</p>
+                        @endif
+                    </div>
+                @else
+                    @php
+                        $walletKey = $shipment->walletSettingKey();
+                        $walletAddress = $walletKey ? ($paymentSettings[$walletKey] ?? null) : null;
+                    @endphp
+                    @if($walletAddress)
+                        <p class="text-xs text-gray-400 mb-1">Send payment to:</p>
+                        <p class="font-mono text-sm break-all text-fes-navy bg-gray-50 rounded-lg px-3 py-2">{{ $walletAddress }}</p>
+                    @endif
+                @endif
+            @endif
+        </div>
+        @endif
     </div>
 
     <!-- Tracking Timeline -->

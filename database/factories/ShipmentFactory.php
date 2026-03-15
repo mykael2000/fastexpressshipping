@@ -18,6 +18,8 @@ class ShipmentFactory extends Factory
             'eta' => $this->faker->dateTimeBetween('now', '+2 weeks'),
             'shipped_date' => $this->faker->dateTimeBetween('-1 week', 'now'),
             'service_level' => $this->faker->randomElement(['standard', 'express', 'overnight']),
+            'payment_status' => 'unpaid',
+            'paid_at' => null,
             'notify_email' => true,
             'notify_sms' => false,
         ];

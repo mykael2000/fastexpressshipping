@@ -67,7 +67,7 @@ class AdminShipmentTest extends TestCase
                 'recipient_name' => 'Jane Smith',
                 'recipient_email' => 'jane@example.com',
                 'service_level' => 'express',
-                'payment_mode' => 'bank_transfer',
+                'payment_mode' => 'bank',
                 'weight_kg' => '2.50',
                 'remark' => 'Cost: $15. Handle with care.',
                 'notify_email' => '1',
@@ -77,7 +77,7 @@ class AdminShipmentTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseHas('shipments', [
             'tracking_number' => 'ADMIN002',
-            'payment_mode' => 'bank_transfer',
+            'payment_mode' => 'bank',
             'remark' => 'Cost: $15. Handle with care.',
         ]);
 
@@ -156,5 +156,42 @@ class AdminShipmentTest extends TestCase
                 'service_level' => 'standard',
             ])
             ->assertSessionHasErrors('tracking_number');
+    }
+
+    public function test_admin_can_mark_shipment_as_paid(): void
+    {
+        $shipment = Shipment::factory()->create(['payment_status' => 'unpaid']);
+
+        $this->actingAs($this->admin())
+            ->post("/admin/shipments/{$shipment->id}/mark-paid")
+            ->assertRedirect();
+
+        $shipment->refresh();
+        $this->assertEquals('paid', $shipment->payment_status);
+        $this->assertNotNull($shipment->paid_at);
+    }
+
+    public function test_admin_can_mark_shipment_as_unpaid(): void
+    {
+        $shipment = Shipment::factory()->create([
+            'payment_status' => 'paid',
+            'paid_at' => now(),
+        ]);
+
+        $this->actingAs($this->admin())
+            ->post("/admin/shipments/{$shipment->id}/mark-unpaid")
+            ->assertRedirect();
+
+        $shipment->refresh();
+        $this->assertEquals('unpaid', $shipment->payment_status);
+        $this->assertNull($shipment->paid_at);
+    }
+
+    public function test_guest_cannot_mark_shipment_as_paid(): void
+    {
+        $shipment = Shipment::factory()->create(['payment_status' => 'unpaid']);
+
+        $this->post("/admin/shipments/{$shipment->id}/mark-paid")
+            ->assertRedirect('/login');
     }
 }
