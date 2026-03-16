@@ -57,12 +57,12 @@ class SmsManager
 
     protected function getPrimaryName(): string
     {
-        return (string) config('services.sms.provider', 'termii');
+        return (string) config('services.sms.provider', 'twilio');
     }
 
     protected function getFallbackName(): string
     {
-        return (string) config('services.sms.fallback_provider', 'twilio');
+        return (string) config('services.sms.fallback_provider', 'sns');
     }
 
     protected function logWarning(string $message): void

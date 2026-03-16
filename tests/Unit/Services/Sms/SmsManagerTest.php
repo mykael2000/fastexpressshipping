@@ -21,7 +21,7 @@ class SmsManagerTest extends TestCase
         return $client;
     }
 
-    private function makeManager(array $clients, string $primary = 'termii', string $fallback = 'twilio'): SmsManager
+    private function makeManager(array $clients, string $primary = 'twilio', string $fallback = 'sns'): SmsManager
     {
         // Stub config() calls used by SmsManager via a wrapper approach.
         // Since SmsManager reads config() directly we swap the approach:
@@ -52,50 +52,50 @@ class SmsManagerTest extends TestCase
 
     public function test_sends_via_primary_when_configured(): void
     {
-        $termii = $this->makeClient('termii', true);
-        $termii->expects($this->once())->method('send');
-
         $twilio = $this->makeClient('twilio', true);
-        $twilio->expects($this->never())->method('send');
+        $twilio->expects($this->once())->method('send');
 
-        $manager = $this->makeManager(['termii' => $termii, 'twilio' => $twilio]);
+        $sns = $this->makeClient('sns', true);
+        $sns->expects($this->never())->method('send');
+
+        $manager = $this->makeManager(['twilio' => $twilio, 'sns' => $sns]);
         $result = $manager->send('+2348012345678', 'Hello');
 
-        $this->assertSame('termii', $result);
+        $this->assertSame('twilio', $result);
     }
 
     public function test_falls_back_to_secondary_when_primary_throws(): void
     {
-        $termii = $this->makeClient('termii', true, new \RuntimeException('Termii down'));
-        $twilio = $this->makeClient('twilio', true);
-        $twilio->expects($this->once())->method('send');
+        $twilio = $this->makeClient('twilio', true, new \RuntimeException('Twilio down'));
+        $sns = $this->makeClient('sns', true);
+        $sns->expects($this->once())->method('send');
 
-        $manager = $this->makeManager(['termii' => $termii, 'twilio' => $twilio]);
+        $manager = $this->makeManager(['twilio' => $twilio, 'sns' => $sns]);
         $result = $manager->send('+2348012345678', 'Hello');
 
-        $this->assertSame('twilio', $result);
+        $this->assertSame('sns', $result);
     }
 
     public function test_skips_unconfigured_primary_and_uses_fallback(): void
     {
-        $termii = $this->makeClient('termii', false);
-        $termii->expects($this->never())->method('send');
+        $twilio = $this->makeClient('twilio', false);
+        $twilio->expects($this->never())->method('send');
 
-        $twilio = $this->makeClient('twilio', true);
-        $twilio->expects($this->once())->method('send');
+        $sns = $this->makeClient('sns', true);
+        $sns->expects($this->once())->method('send');
 
-        $manager = $this->makeManager(['termii' => $termii, 'twilio' => $twilio]);
+        $manager = $this->makeManager(['twilio' => $twilio, 'sns' => $sns]);
         $result = $manager->send('+2348012345678', 'Hello');
 
-        $this->assertSame('twilio', $result);
+        $this->assertSame('sns', $result);
     }
 
     public function test_throws_when_no_providers_configured(): void
     {
-        $termii = $this->makeClient('termii', false);
         $twilio = $this->makeClient('twilio', false);
+        $sns = $this->makeClient('sns', false);
 
-        $manager = $this->makeManager(['termii' => $termii, 'twilio' => $twilio]);
+        $manager = $this->makeManager(['twilio' => $twilio, 'sns' => $sns]);
 
         $this->expectException(\RuntimeException::class);
         $manager->send('+2348012345678', 'Hello');
@@ -103,10 +103,10 @@ class SmsManagerTest extends TestCase
 
     public function test_throws_when_both_providers_fail(): void
     {
-        $termii = $this->makeClient('termii', true, new \RuntimeException('Termii error'));
         $twilio = $this->makeClient('twilio', true, new \RuntimeException('Twilio error'));
+        $sns = $this->makeClient('sns', true, new \RuntimeException('SNS error'));
 
-        $manager = $this->makeManager(['termii' => $termii, 'twilio' => $twilio]);
+        $manager = $this->makeManager(['twilio' => $twilio, 'sns' => $sns]);
 
         $this->expectException(\RuntimeException::class);
         $manager->send('+2348012345678', 'Hello');
@@ -121,47 +121,47 @@ class SmsManagerTest extends TestCase
         $sns = $this->makeClient('sns', true);
         $sns->expects($this->once())->method('send');
 
-        $termii = $this->makeClient('termii', true);
-        $termii->expects($this->never())->method('send');
+        $twilio = $this->makeClient('twilio', true);
+        $twilio->expects($this->never())->method('send');
 
-        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+        $manager = $this->makeManager(['sns' => $sns, 'twilio' => $twilio], 'sns', 'twilio');
         $result = $manager->send('+12125551234', 'Hello');
 
         $this->assertSame('sns', $result);
     }
 
-    public function test_falls_back_to_termii_when_sns_fails(): void
+    public function test_falls_back_to_twilio_when_sns_fails(): void
     {
         $sns = $this->makeClient('sns', true, new \RuntimeException('SNS error'));
-        $termii = $this->makeClient('termii', true);
-        $termii->expects($this->once())->method('send');
+        $twilio = $this->makeClient('twilio', true);
+        $twilio->expects($this->once())->method('send');
 
-        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+        $manager = $this->makeManager(['sns' => $sns, 'twilio' => $twilio], 'sns', 'twilio');
         $result = $manager->send('+12125551234', 'Hello');
 
-        $this->assertSame('termii', $result);
+        $this->assertSame('twilio', $result);
     }
 
-    public function test_falls_back_to_termii_when_sns_not_configured(): void
+    public function test_falls_back_to_twilio_when_sns_not_configured(): void
     {
         $sns = $this->makeClient('sns', false);
         $sns->expects($this->never())->method('send');
 
-        $termii = $this->makeClient('termii', true);
-        $termii->expects($this->once())->method('send');
+        $twilio = $this->makeClient('twilio', true);
+        $twilio->expects($this->once())->method('send');
 
-        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+        $manager = $this->makeManager(['sns' => $sns, 'twilio' => $twilio], 'sns', 'twilio');
         $result = $manager->send('+12125551234', 'Hello');
 
-        $this->assertSame('termii', $result);
+        $this->assertSame('twilio', $result);
     }
 
-    public function test_throws_when_sns_and_termii_both_fail(): void
+    public function test_throws_when_sns_and_twilio_both_fail(): void
     {
         $sns = $this->makeClient('sns', true, new \RuntimeException('SNS error'));
-        $termii = $this->makeClient('termii', true, new \RuntimeException('Termii error'));
+        $twilio = $this->makeClient('twilio', true, new \RuntimeException('Twilio error'));
 
-        $manager = $this->makeManager(['sns' => $sns, 'termii' => $termii], 'sns', 'termii');
+        $manager = $this->makeManager(['sns' => $sns, 'twilio' => $twilio], 'sns', 'twilio');
 
         $this->expectException(\RuntimeException::class);
         $manager->send('+12125551234', 'Hello');
