@@ -64,12 +64,17 @@ class AdminShipmentTest extends TestCase
                 'status' => 'created',
                 'origin' => 'Lagos, NG',
                 'destination' => 'Abuja, NG',
+                'sender_name' => 'Alice Sender',
+                'sender_email' => 'alice@example.com',
+                'sender_address' => '123 Main St, Lagos',
+                'sender_phone' => '+234 800 000 0000',
                 'recipient_name' => 'Jane Smith',
                 'recipient_email' => 'jane@example.com',
                 'service_level' => 'express',
                 'payment_mode' => 'bank',
                 'weight_kg' => '2.50',
-                'remark' => 'Cost: $15. Handle with care.',
+                'amount' => '150.00',
+                'remark' => 'Handle with care.',
                 'notify_email' => '1',
                 'notify_sms' => '0',
             ]);
@@ -78,11 +83,16 @@ class AdminShipmentTest extends TestCase
         $this->assertDatabaseHas('shipments', [
             'tracking_number' => 'ADMIN002',
             'payment_mode' => 'bank',
-            'remark' => 'Cost: $15. Handle with care.',
+            'sender_name' => 'Alice Sender',
+            'sender_email' => 'alice@example.com',
+            'sender_address' => '123 Main St, Lagos',
+            'sender_phone' => '+234 800 000 0000',
+            'remark' => 'Handle with care.',
         ]);
 
         $shipment = Shipment::where('tracking_number', 'ADMIN002')->first();
         $this->assertEquals('2.50', $shipment->weight_kg);
+        $this->assertEquals('150.00', $shipment->amount);
     }
 
     public function test_shipment_weight_kg_must_be_non_negative(): void
@@ -143,6 +153,36 @@ class AdminShipmentTest extends TestCase
             ->assertRedirect('/admin/shipments');
 
         $this->assertDatabaseMissing('shipments', ['id' => $shipment->id]);
+    }
+
+    public function test_shipment_amount_must_be_non_negative(): void
+    {
+        $this->actingAs($this->admin())
+            ->post('/admin/shipments', [
+                'tracking_number' => 'ADMIN005',
+                'status' => 'created',
+                'origin' => 'New York, NY',
+                'destination' => 'LA',
+                'recipient_name' => 'Test',
+                'service_level' => 'standard',
+                'amount' => '-10',
+            ])
+            ->assertSessionHasErrors('amount');
+    }
+
+    public function test_shipment_sender_email_must_be_valid(): void
+    {
+        $this->actingAs($this->admin())
+            ->post('/admin/shipments', [
+                'tracking_number' => 'ADMIN006',
+                'status' => 'created',
+                'origin' => 'New York, NY',
+                'destination' => 'LA',
+                'recipient_name' => 'Test',
+                'service_level' => 'standard',
+                'sender_email' => 'not-an-email',
+            ])
+            ->assertSessionHasErrors('sender_email');
     }
 
     public function test_shipment_creation_requires_tracking_number(): void
