@@ -55,6 +55,43 @@ document.addEventListener("DOMContentLoaded", function () {
         @error('destination')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
     </div>
 
+    <div class="sm:col-span-2">
+        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3 mt-1">Sender Information</p>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sender Name</label>
+        <input type="text" name="sender_name" value="{{ old('sender_name', $isEdit ? $shipment->sender_name : '') }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('sender_name') border-red-400 @enderror">
+        @error('sender_name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sender Email</label>
+        <input type="email" name="sender_email" value="{{ old('sender_email', $isEdit ? $shipment->sender_email : '') }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('sender_email') border-red-400 @enderror">
+        @error('sender_email')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sender Phone</label>
+        <input type="text" name="sender_phone" value="{{ old('sender_phone', $isEdit ? $shipment->sender_phone : '') }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('sender_phone') border-red-400 @enderror"
+            placeholder="+1 555 000 0000">
+        @error('sender_phone')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Sender Address</label>
+        <input type="text" name="sender_address" value="{{ old('sender_address', $isEdit ? $shipment->sender_address : '') }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('sender_address') border-red-400 @enderror">
+        @error('sender_address')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
+
+    <div class="sm:col-span-2">
+        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3 mt-1">Recipient Information</p>
+    </div>
+
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Recipient Name <span class="text-red-500">*</span></label>
         <input type="text" name="recipient_name" value="{{ old('recipient_name', $isEdit ? $shipment->recipient_name : '') }}"
@@ -104,6 +141,15 @@ document.addEventListener("DOMContentLoaded", function () {
             class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('weight_kg') border-red-400 @enderror"
             placeholder="e.g. 1.50">
         @error('weight_kg')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+        <input type="number" name="amount" value="{{ old('amount', $isEdit ? $shipment->amount : '') }}"
+            step="0.01" min="0"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-fes-orange @error('amount') border-red-400 @enderror"
+            placeholder="e.g. 99.99">
+        @error('amount')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
     </div>
 
     <div>

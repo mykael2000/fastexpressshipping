@@ -10,9 +10,10 @@ class Shipment extends Model
 
     protected $fillable = [
         'tracking_number', 'status', 'origin', 'destination',
+        'sender_name', 'sender_email', 'sender_address', 'sender_phone',
         'recipient_name', 'recipient_email', 'recipient_phone',
         'eta', 'shipped_date', 'service_level', 'notes',
-        'payment_mode', 'payment_status', 'paid_at', 'weight_kg', 'remark',
+        'payment_mode', 'payment_status', 'paid_at', 'weight_kg', 'amount', 'remark',
         'notify_email', 'notify_sms', 'updated_by',
     ];
 
@@ -23,6 +24,7 @@ class Shipment extends Model
         'notify_email' => 'boolean',
         'notify_sms' => 'boolean',
         'weight_kg' => 'decimal:2',
+        'amount' => 'decimal:2',
     ];
 
     public function trackingEvents()

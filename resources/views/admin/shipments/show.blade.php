@@ -44,6 +44,10 @@
                         'Origin' => $shipment->origin,
                         'Destination' => $shipment->destination,
                         'Service Level' => ucfirst($shipment->service_level),
+                        'Sender' => $shipment->sender_name ?: '—',
+                        'Sender Email' => $shipment->sender_email ?: '—',
+                        'Sender Phone' => $shipment->sender_phone ?: '—',
+                        'Sender Address' => $shipment->sender_address ?: '—',
                         'Recipient' => $shipment->recipient_name,
                         'Email' => $shipment->recipient_email ?: '—',
                         'Phone' => $shipment->recipient_phone ?: '—',
@@ -119,6 +123,12 @@
                     <span class="text-gray-500">Method</span>
                     <span class="font-medium text-fes-navy">{{ $shipment->paymentModeLabel() }}</span>
                 </li>
+                @if($shipment->amount !== null)
+                <li class="flex items-center justify-between">
+                    <span class="text-gray-500">Amount</span>
+                    <span class="font-medium text-fes-navy">${{ number_format($shipment->amount, 2) }}</span>
+                </li>
+                @endif
                 <li class="flex items-center justify-between">
                     <span class="text-gray-500">Status</span>
                     @if($shipment->payment_status === 'paid')
