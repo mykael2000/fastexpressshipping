@@ -39,10 +39,15 @@
                     ['label' => 'From', 'value' => $shipment->origin],
                     ['label' => 'To', 'value' => $shipment->destination],
                     ['label' => 'Service', 'value' => ucfirst($shipment->service_level)],
+                    ['label' => 'Sender', 'value' => $shipment->sender_name ?: '—'],
+                    ['label' => 'Sender Email', 'value' => $shipment->sender_email ?: '—'],
+                    ['label' => 'Sender Phone', 'value' => $shipment->sender_phone ?: '—'],
+                    ['label' => 'Sender Address', 'value' => $shipment->sender_address ?: '—'],
                     ['label' => 'Recipient', 'value' => $shipment->recipient_name],
                     ['label' => 'Shipped', 'value' => $shipment->shipped_date ? $shipment->shipped_date->format('M d, Y') : '—'],
                     ['label' => 'Est. Delivery', 'value' => $shipment->eta ? $shipment->eta->format('M d, Y') : '—'],
                     ['label' => 'Payment Mode', 'value' => $shipment->paymentModeLabel()],
+                    ['label' => 'Amount', 'value' => $shipment->amount !== null ? '$' . number_format((float) $shipment->amount, 2) : '—'],
                     ['label' => 'Weight', 'value' => $shipment->weight_kg !== null ? number_format((float) $shipment->weight_kg, 2) . ' kg' : '—'],
                 ];
             @endphp
