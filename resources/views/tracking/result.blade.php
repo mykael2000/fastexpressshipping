@@ -47,7 +47,7 @@
                     ['label' => 'Shipped', 'value' => $shipment->shipped_date ? $shipment->shipped_date->format('M d, Y') : '—'],
                     ['label' => 'Est. Delivery', 'value' => $shipment->eta ? $shipment->eta->format('M d, Y') : '—'],
                     ['label' => 'Payment Mode', 'value' => $shipment->paymentModeLabel()],
-                    ['label' => 'Amount', 'value' => $shipment->amount !== null ? '$' . number_format((float) $shipment->amount, 2) : '—'],
+                    ['label' => 'Amount', 'value' => $shipment->amount !== null ? trim(($shipment->amount_currency ? $shipment->amount_currency . ' ' : '') . number_format((float) $shipment->amount, 2)) : '—'],
                     ['label' => 'Weight', 'value' => $shipment->weight_kg !== null ? number_format((float) $shipment->weight_kg, 2) . ' kg' : '—'],
                 ];
             @endphp

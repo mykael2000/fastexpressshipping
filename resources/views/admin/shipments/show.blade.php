@@ -126,7 +126,7 @@
                 @if($shipment->amount !== null)
                 <li class="flex items-center justify-between">
                     <span class="text-gray-500">Amount</span>
-                    <span class="font-medium text-fes-navy">${{ number_format($shipment->amount, 2) }}</span>
+                    <span class="font-medium text-fes-navy">{{ trim(($shipment->amount_currency ? $shipment->amount_currency . ' ' : '') . number_format((float) $shipment->amount, 2)) }}</span>
                 </li>
                 @endif
                 <li class="flex items-center justify-between">

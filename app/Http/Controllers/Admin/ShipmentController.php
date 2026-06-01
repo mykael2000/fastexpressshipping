@@ -144,6 +144,7 @@ class ShipmentController extends Controller
             'payment_mode'     => ['nullable', 'string', 'in:' . implode(',', array_keys(Shipment::paymentModeOptions()))],
             'weight_kg'        => ['nullable', 'numeric', 'min:0'],
             'amount'           => ['nullable', 'numeric', 'min:0'],
+            'amount_currency'  => ['nullable', 'string', 'max:10'],
             'remark'           => ['nullable', 'string', 'max:2000'],
             'notify_email'     => ['boolean'],
             'notify_sms'       => ['boolean'],

@@ -13,7 +13,7 @@ class Shipment extends Model
         'sender_name', 'sender_email', 'sender_address', 'sender_phone',
         'recipient_name', 'recipient_email', 'recipient_phone',
         'eta', 'shipped_date', 'service_level', 'notes',
-        'payment_mode', 'payment_status', 'paid_at', 'weight_kg', 'amount', 'remark',
+        'payment_mode', 'payment_status', 'paid_at', 'weight_kg', 'amount', 'amount_currency', 'remark',
         'notify_email', 'notify_sms', 'updated_by',
     ];
 
