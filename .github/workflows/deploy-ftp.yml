@@ -71,73 +71,45 @@ jobs:
         if: steps.changes.outputs.frontend == 'true'
         run: npm run build
 
-      - name: Upload app (non-public) to ./app
-        uses: wangyucode/sftp-upload-action@v2.0.2
-        with:
-          host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          localDir: "${{ github.workspace }}"
-          remoteDir: "./app"
-          exclude: |
-            **/.git*
-            **/.github/**
-            **/node_modules/**
-            **/tests/**
-            **/.env
-            **/storage/**
-            public/**
-            deploy_webroot/**
-            deploy_app_protect/**
-
-      - name: Upload public/ to web root ./
-        uses: wangyucode/sftp-upload-action@v2.0.2
-        with:
-          host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          localDir: "${{ github.workspace }}/public"
-          remoteDir: "./"
-          exclude: |
-            **/.git*
-            **/.github/**
-
-      - name: Prepare patched webroot index.php
+      - name: Prepare deploy bundle
         run: |
           set -e
-          rm -rf deploy_webroot
-          mkdir -p deploy_webroot
-          cp public/index.php deploy_webroot/index.php
-          sed -i "s#__DIR__\.'/../vendor/autoload.php'#__DIR__.'\/app\/vendor\/autoload.php'#g" deploy_webroot/index.php
-          sed -i "s#__DIR__\.'/../bootstrap/app.php'#__DIR__.'\/app\/bootstrap\/app.php'#g" deploy_webroot/index.php
+          rm -rf deploy_bundle
+          mkdir -p deploy_bundle/app
 
-      - name: Upload patched index.php to web root ./
-        uses: wangyucode/sftp-upload-action@v2.0.2
-        with:
-          host: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: ${{ secrets.SFTP_PORT }}
-          localDir: "${{ github.workspace }}/deploy_webroot"
-          remoteDir: "./"
+          tar \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=node_modules \
+            --exclude=tests \
+            --exclude=.env \
+            --exclude=storage \
+            --exclude=public \
+            --exclude=deploy_bundle \
+            --exclude=deploy_webroot \
+            --exclude=deploy_app_protect \
+            -cf - . | tar -xf - -C deploy_bundle/app
 
-      - name: Create deny rules for /app (Apache)
-        run: |
-          set -e
-          rm -rf deploy_app_protect
-          mkdir -p deploy_app_protect
-          cat > deploy_app_protect/.htaccess <<'EOF'
+          shopt -s dotglob
+          cp -R public/* deploy_bundle/
+          shopt -u dotglob
+
+          sed -i "s#__DIR__\.'/../vendor/autoload.php'#__DIR__.'\/app\/vendor\/autoload.php'#g" deploy_bundle/index.php
+          sed -i "s#__DIR__\.'/../bootstrap/app.php'#__DIR__.'\/app\/bootstrap\/app.php'#g" deploy_bundle/index.php
+
+          cat > deploy_bundle/app/.htaccess <<'EOF'
           Require all denied
           EOF
 
-      - name: Upload app protection
-        uses: wangyucode/sftp-upload-action@v2.0.2
+      - name: Upload bundle to server
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          localDir: "${{ github.workspace }}/deploy_app_protect"
-          remoteDir: "./app"
+          source: "deploy_bundle/*,deploy_bundle/.htaccess"
+          target: "./"
+          strip_components: 1
+          overwrite: true
+
