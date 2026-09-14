@@ -198,6 +198,25 @@ class AdminShipmentTest extends TestCase
             ->assertSessionHasErrors('tracking_number');
     }
 
+    public function test_invalid_shipment_submission_shows_validation_summary(): void
+    {
+        $response = $this->actingAs($this->admin())
+            ->from('/admin/shipments/create')
+            ->post('/admin/shipments', [
+                'tracking_number' => '',
+                'status' => '',
+                'origin' => '',
+                'destination' => '',
+                'recipient_name' => '',
+                'service_level' => '',
+            ]);
+
+        $response->assertRedirect('/admin/shipments/create');
+
+        $this->followRedirects($response)
+            ->assertSee('Please correct the highlighted fields below.');
+    }
+
     public function test_admin_can_mark_shipment_as_paid(): void
     {
         $shipment = Shipment::factory()->create(['payment_status' => 'unpaid']);
